@@ -1,6 +1,6 @@
 // src/components/Layout.tsx
 import React from 'react';
-import DarkModeToggle from './DarkModeToggle';  // This import now works because the file exists
+import DarkModeToggle from './DarkModeToggle'; // This should now correctly find DarkModeToggle.tsx
 import Head from 'next/head';
 import Image from 'next/image';
 
