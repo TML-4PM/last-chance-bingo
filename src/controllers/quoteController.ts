@@ -1,7 +1,8 @@
 // src/controllers/quoteController.ts
 import fs from 'fs';
 import path from 'path';
-import productList from '../../../public/04_productList.json';
+// Corrected the import path: two levels up from src/controllers to the root, then into public
+import productList from '../../public/04_productList.json';
 import { prisma } from '../utils/db';
 import PDFDocument from 'pdfkit';
 import {
@@ -48,7 +49,7 @@ export async function generateQuote(
   let totalPrice = 0;
   let products: { sku: string; quantity: number }[] = [];
 
-  // Build a lookup map from productList
+  // Build a lookup map from the productList
   const productMap: { [sku: string]: { name: string; price: number } } = {};
   productList.forEach((category: any) => {
     category.items.forEach((product: any) => {
