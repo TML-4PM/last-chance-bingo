@@ -33,7 +33,7 @@ export default function Home() {
   const [serviceType, setServiceType] = useState('Remote');
   const [environment, setEnvironment] = useState('Office');
   const [technicianTravel, setTechnicianTravel] = useState(false);
-  const [technicianHours, setTechnicianHours] = useState(0); // optional field
+  const [technicianHours, setTechnicianHours] = useState(0);
   const [travelTime, setTravelTime] = useState(0);
   const [buildingAccessibility, setBuildingAccessibility] = useState('Easy');
   const [emergency, setEmergency] = useState(false);
@@ -68,7 +68,7 @@ export default function Home() {
       .catch(() => toast.error('Failed to load available time slots.'));
   }, []);
 
-  // Handler to clear the entire form
+  // Clear Form Handler
   const clearForm = () => {
     setEmail('');
     setReferralCode('');
@@ -87,7 +87,7 @@ export default function Home() {
     setBuildingAccessibility('Easy');
     setEmergency(false);
     setTimeSlot('');
-    // Reload products to reset quantities:
+    // Reload products to reset quantities
     fetch('/api/products')
       .then((res) => res.json())
       .then((data: ProductCategory[]) => {
@@ -220,12 +220,12 @@ export default function Home() {
         {/* Email and Referral Section */}
         <div className="space-y-2">
           <label htmlFor="email" className="block font-medium text-lg">
-            please drop the contents of your email (copy/paste) here, press 'load quote' and continue shopping. That's it!
+            paste your email here for a quote
           </label>
           <input
             type="email"
             id="email"
-            placeholder="your-email@example.com"
+            placeholder="paste your email here for a quote"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="w-full md:w-3/4 p-6 border rounded text-xl"
