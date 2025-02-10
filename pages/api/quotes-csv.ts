@@ -4,10 +4,10 @@ import fs from 'fs';
 import path from 'path';
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
-  // Path to the CSV file
+  // Construct the path to the CSV file located at project-root/logs/quotes.csv
   const csvPath = path.join(process.cwd(), 'logs', 'quotes.csv');
-  
-  // Read the CSV file
+
+  // Read the CSV file from the filesystem
   fs.readFile(csvPath, 'utf8', (err, data) => {
     if (err) {
       console.error("Error reading CSV file:", err);
