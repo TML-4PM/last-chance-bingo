@@ -1,8 +1,7 @@
 // src/controllers/quoteController.ts
 import fs from 'fs';
 import path from 'path';
-// Correct relative path: from src/controllers/ to project root is "../../"
-// Then into public/04_productList.json
+// Import JSON from public folder – note: from src/controllers, two levels up is correct.
 import productList from '../../public/04_productList.json';
 import { prisma } from '../utils/db';
 import PDFDocument from 'pdfkit';
@@ -137,7 +136,7 @@ export async function generateQuote(
 
   const summary = summaryParts.join('\n');
 
-  // Save the quote to the database using Prisma
+  // Save the quote to the database
   await prisma.quote.create({
     data: {
       customerName: email,
@@ -159,7 +158,20 @@ export async function createQuotePDF(quote: Quote): Promise<Buffer> {
       resolve(Buffer.concat(buffers));
     });
 
-    // Generate PDF with branding and compliance details
+    // Insert Logos from the assets folder into the PDF.
+    // Construct the paths to the logo images
+    const officeworksLogoPath = path.join(process.cwd(), 'public', 'assets', 'officeworks-logo.png');
+    const geeks2uLogoPath = path.join(process.cwd(), 'public', 'assets', 'geeks2u-logo.png');
+
+    // Place the Officeworks logo in the top left
+    doc.image(officeworksLogoPath, 50, 20, { width: 100 });
+    // Place the Geeks2U logo in the top right
+    doc.image(geeks2uLogoPath, doc.page.width - 150, 20, { width: 100 });
+
+    // Move down to leave some vertical space after the logos
+    doc.moveDown(3);
+
+    // Generate PDF content
     doc.fontSize(20).text('Quote', { align: 'center' });
     doc.moveDown();
     doc.fontSize(12).text(`Customer: ${quote.customerEmail}`);
