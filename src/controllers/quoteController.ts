@@ -51,15 +51,6 @@ export async function generateQuote(
   let products: { sku: string; quantity: number }[] = [];
 
   // Build a lookup map from the productList JSON
-  productList.forEach((category: any) => {
-    category.items.forEach((product: any) => {
-      // Convert price from string to number
-      const price = parseFloat(product.price);
-      productMap[product.sku] = { name: product.name, price };
-    });
-  });
-
-  // Alternatively, build the map in one loop:
   const productMap: { [sku: string]: { name: string; price: number } } = {};
   productList.forEach((category: any) => {
     category.items.forEach((product: any) => {
@@ -160,8 +151,7 @@ export async function generateQuote(
 }
 
 export async function createQuotePDF(quote: Quote): Promise<Buffer> {
-  // Wrap the PDF generation in a promise
-  return new Promise(async (resolve, reject) => {
+  return new Promise((resolve, reject) => {
     try {
       const doc = new PDFDocument();
       const buffers: Buffer[] = [];
@@ -169,20 +159,21 @@ export async function createQuotePDF(quote: Quote): Promise<Buffer> {
       doc.on('end', () => {
         resolve(Buffer.concat(buffers));
       });
-      doc.on('error', (err) => reject(err));
+      // Explicitly type the error parameter for the 'error' event
+      doc.on('error', (err: Error) => reject(err));
 
-      // Insert logos from the assets folder
+      // Paths to the logos in the public/assets folder
       const officeworksLogoPath = path.join(process.cwd(), 'public', 'assets', 'officeworks_logo.png');
       const geeks2uLogoPath = path.join(process.cwd(), 'public', 'assets', 'geeks2u-logo.png');
 
-      // Place the Officeworks logo in the top left and Geeks2U logo in the top right
+      // Add logos to the PDF: Officeworks logo on the left, Geeks2U logo on the right
       doc.image(officeworksLogoPath, 50, 20, { width: 100 });
       doc.image(geeks2uLogoPath, doc.page.width - 150, 20, { width: 100 });
 
-      // Move down to create space after logos
+      // Add vertical space below the logos
       doc.moveDown(3);
 
-      // Write quote details
+      // Write the quote header and details
       doc.fontSize(20).text('Quote', { align: 'center' });
       doc.moveDown();
       doc.fontSize(12).text(`Customer: ${quote.customerEmail}`);
@@ -203,13 +194,15 @@ export async function createQuotePDF(quote: Quote): Promise<Buffer> {
 
       // Generate a unique QR code based on the quote summary
       const uniqueString = crypto.createHash('sha256').update(quote.summary).digest('hex');
-      const qrDataUrl = await QRCode.toDataURL(uniqueString, { errorCorrectionLevel: 'H' });
-      const qrBuffer = Buffer.from(qrDataUrl.split(',')[1], 'base64');
-
-      // Place the QR code at the bottom center of the page
-      doc.image(qrBuffer, doc.page.width / 2 - 50, doc.y, { width: 100 });
-
-      doc.end();
+      QRCode.toDataURL(uniqueString, { errorCorrectionLevel: 'H' }, (err: Error | null, qrDataUrl: string) => {
+        if (err) {
+          return reject(err);
+        }
+        const qrBuffer = Buffer.from(qrDataUrl.split(',')[1], 'base64');
+        // Place the QR code at the bottom center of the page
+        doc.image(qrBuffer, doc.page.width / 2 - 50, doc.y, { width: 100 });
+        doc.end();
+      });
     } catch (error) {
       reject(error);
     }
