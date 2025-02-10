@@ -1,0 +1,55 @@
+[
+  {
+    "category": "Laptops",
+    "items": [
+      { "sku": "LAP-003", "name": "Lenovo IdeaPad Flex 5i 14\"", "price": "799" },
+      { "sku": "LAP-004", "name": "Acer Swift 1 Notebook", "price": "699" },
+      { "sku": "LAP-005", "name": "Apple MacBook Pro 16\"", "price": "3499" },
+      { "sku": "LAP-006", "name": "HP ZBook Fury 15 G8 Mobile Workstation", "price": "4299" }
+    ]
+  },
+  {
+    "category": "Monitors",
+    "items": [
+      { "sku": "MON-001", "name": "HP 24\" FHD Monitor", "price": "249" },
+      { "sku": "MON-004", "name": "LG 29\" UltraWide Monitor", "price": "349" },
+      { "sku": "MON-005", "name": "Dell UltraSharp 27\" 4K Monitor", "price": "899" },
+      { "sku": "MON-006", "name": "BenQ PD3220U 32\" 4K Monitor", "price": "1199" }
+    ]
+  },
+  {
+    "category": "Keyboards & Mice",
+    "items": [
+      { "sku": "KEY-002", "name": "J.Burrows Bluetooth Keyboard Silver", "price": "49.95" },
+      { "sku": "MOU-001", "name": "Logitech M280 Wireless Mouse", "price": "39.95" },
+      { "sku": "KEY-003", "name": "Logitech Wireless Keyboard K270", "price": "59.95" },
+      { "sku": "MOU-003", "name": "Microsoft Bluetooth Mouse", "price": "49.95" },
+      { "sku": "MOU-004", "name": "Logitech MX Master 3 Wireless Mouse", "price": "149" },
+      { "sku": "KEY-004", "name": "Logitech Craft Advanced Wireless Keyboard", "price": "299" }
+    ]
+  },
+  {
+    "category": "Printers & Scanners",
+    "items": [
+      { "sku": "PRT-002", "name": "Canon PIXMA TS5360a All-in-One Home Printer", "price": "149" },
+      { "sku": "SCN-001", "name": "Brother DS-640 Portable Scanner", "price": "179" },
+      { "sku": "HDD-001", "name": "G-Technology 4TB G-DRIVE USB-C External Hard Drive", "price": "249" }
+    ]
+  },
+  {
+    "category": "Webcams & Headsets",
+    "items": [
+      { "sku": "WBC-001", "name": "Logitech C920 HD Pro Webcam", "price": "139" },
+      { "sku": "HSET-001", "name": "Logitech H390 USB Headset", "price": "79.95" }
+    ]
+  },
+  {
+    "category": "Accessories",
+    "items": [
+      { "sku": "TAB-001", "name": "Wacom Intuos Pro Medium Graphics Tablet", "price": "549" },
+      { "sku": "HUB-001", "name": "Anker USB-C Hub with HDMI and Ethernet", "price": "99" },
+      { "sku": "SPK-001", "name": "Jabra Speak 510 Portable Bluetooth Speakerphone", "price": "199" },
+      { "sku": "UPS-001", "name": "APC Back-UPS 700VA", "price": "229" }
+    ]
+  }
+]
