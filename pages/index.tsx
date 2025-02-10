@@ -43,7 +43,7 @@ export default function Home() {
   // CSV Data state
   const [csvData, setCsvData] = useState('');
 
-  // Load products from API
+  // Load products from API with initial quantity 0 for each product
   useEffect(() => {
     fetch('/api/products')
       .then((res) => res.json())
@@ -52,7 +52,7 @@ export default function Home() {
         const initialQuantities: { [sku: string]: number } = {};
         data.forEach((cat) =>
           cat.items.forEach((prod) => {
-            initialQuantities[prod.sku] = 1;
+            initialQuantities[prod.sku] = 0;
           })
         );
         setQuantities(initialQuantities);
@@ -68,12 +68,11 @@ export default function Home() {
       .catch(() => toast.error('Failed to load available time slots.'));
   }, []);
 
-  // Clear Form Handler
+  // Clear Form Handler: resets all form fields
   const clearForm = () => {
     setEmail('');
     setReferralCode('');
     setSelectedProducts({});
-    setQuantities({});
     setQuoteSummary('');
     setTotalPrice(0);
     setScheduleDate('');
@@ -87,7 +86,7 @@ export default function Home() {
     setBuildingAccessibility('Easy');
     setEmergency(false);
     setTimeSlot('');
-    // Reload products to reset quantities
+    // Reload products to reset quantities to zero
     fetch('/api/products')
       .then((res) => res.json())
       .then((data: ProductCategory[]) => {
@@ -95,7 +94,7 @@ export default function Home() {
         const initial: { [sku: string]: number } = {};
         data.forEach((cat) =>
           cat.items.forEach((prod) => {
-            initial[prod.sku] = 1;
+            initial[prod.sku] = 0;
           })
         );
         setQuantities(initial);
@@ -107,7 +106,7 @@ export default function Home() {
   const handleProductChange = (sku: string, checked: boolean) => {
     setSelectedProducts((prev) => {
       const newSelection = { ...prev };
-      if (checked) newSelection[sku] = quantities[sku] || 1;
+      if (checked) newSelection[sku] = quantities[sku] || 0;
       else delete newSelection[sku];
       return newSelection;
     });
@@ -277,7 +276,7 @@ export default function Home() {
                       id={`qty-${product.sku}`}
                       min="0"
                       step="1"
-                      value={quantities[product.sku] || 1}
+                      value={quantities[product.sku] || 0}
                       className="w-16 p-1 border rounded ml-2"
                       aria-label={`Quantity for ${product.name}`}
                       onChange={(e) => handleQuantityChange(product.sku, Number(e.target.value))}
