@@ -1,6 +1,5 @@
-// src/components/Layout.tsx
 import React from 'react';
-import DarkModeToggle from './DarkModeToggle'; // This should now correctly find DarkModeToggle.tsx
+import DarkModeToggle from './DarkModeToggle';
 import Head from 'next/head';
 import Image from 'next/image';
 
@@ -16,9 +15,27 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       </Head>
       <header className="flex flex-col sm:flex-row items-center justify-between p-4 border-b bg-white dark:bg-gray-800">
         <div className="flex items-center space-x-4">
-          <Image src="/assets/officeworks-logo.png" alt="Officeworks Logo" width={60} height={60} />
-          <Image src="/assets/geeks2u-logo.png" alt="Geeks2U Logo" width={60} height={60} />
-          <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-200">Job Pricing Calculator</h1>
+          {/* Officeworks Logo */}
+          <div className="relative w-16 h-16">
+            <Image 
+              src="/assets/officeworks_logo.png" 
+              alt="Officeworks Logo" 
+              layout="fill" 
+              objectFit="contain" 
+            />
+          </div>
+          {/* Geeks2U Logo */}
+          <div className="relative w-16 h-16">
+            <Image 
+              src="/assets/geeks2u-logo.png" 
+              alt="Geeks2U Logo" 
+              layout="fill" 
+              objectFit="contain" 
+            />
+          </div>
+          <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-200">
+            Job Pricing Calculator
+          </h1>
         </div>
         <div className="mt-2 sm:mt-0">
           <DarkModeToggle />
