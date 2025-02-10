@@ -1,0 +1,49 @@
+job-pricing-calculator/
+├── public/
+│   ├── assets/
+│   │   ├── officeworks-logo.png         // (Your Officeworks logo image)
+│   │   └── geeks2u-logo.png             // (Your Geeks2U logo image)
+│   ├── 04_productList.json              // Simulated live product catalog
+│   ├── sample-calendar.json             // Contains available time slots
+│   └── manifest.json                    // PWA manifest
+├── prisma/
+│   └── schema.prisma                    // Prisma schema
+├── src/
+│   ├── config/
+│   │   └── pricingConfig.ts             // Configuration for multipliers/fees
+│   ├── controllers/
+│   │   └── quoteController.ts           // Advanced pricing engine & PDF generation
+│   ├── models/
+│   │   └── product.ts                   // Product types
+│   ├── utils/
+│   │   └── db.ts                        // Prisma client instance
+│   └── components/
+│       ├── Chatbot.tsx                  // Simulated NLP chatbot
+│       ├── DarkModeToggle.tsx           // Dark mode toggle using next‑themes
+│       ├── ErrorBoundary.tsx            // Error boundary component
+│       ├── GuidedTour.tsx               // Onboarding overlay
+│       ├── Layout.tsx                   // Layout wrapper with header & dark mode toggle
+│       └── Scheduler.tsx                // Scheduler placeholder (for advanced scheduling)
+├── pages/
+│   ├── _app.tsx                         // Global app file (wrapped in ThemeProvider; with Sentry/GA placeholders)
+│   ├── _document.tsx                    // Document file with SEO, Open Graph, GA placeholders
+│   ├── _error.tsx                       // Error page
+│   ├── index.tsx                        // Main page with product selection, service add‑ons, job details, scheduling, etc.
+│   ├── admin/
+│   │   └── index.tsx                    // Admin dashboard listing saved quotes
+│   └── api/
+│       ├── products.ts                  // Serves product JSON
+│       ├── quote.ts                     // Receives full data and calls generateQuote
+│       ├── emailQuote.ts                // Similar to quote.ts but emails a generated PDF
+│       └── scheduleJob.ts               // Scheduling endpoint
+├── styles/
+│   └── globals.css                      // Tailwind base, components, and custom styles
+├── .github/
+│   └── workflows/
+│       └── ci.yml                       // GitHub Actions workflow file
+├── next.config.js                       // Next.js config (with next‑pwa integration)
+├── postcss.config.js                    // PostCSS configuration
+├── tailwind.config.js                   // Tailwind configuration
+├── package.json
+├── tsconfig.json
+└── README.md
