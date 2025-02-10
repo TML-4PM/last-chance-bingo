@@ -6,7 +6,7 @@ const withPWA = require('next-pwa')({
 module.exports = withPWA({
   reactStrictMode: true,
   eslint: {
-    // This option disables ESLint errors during production builds.
-    ignoreDuringBuilds: true,
+    // Ignore ESLint warnings during production builds
+    ignoreDuringBuilds: true
   }
 });
