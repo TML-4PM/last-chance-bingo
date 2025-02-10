@@ -1,7 +1,8 @@
 // src/controllers/quoteController.ts
 import fs from 'fs';
 import path from 'path';
-// Updated path: two levels up from src/controllers to the root, then public/04_productList.json
+// Correct relative path: from src/controllers/ to project root is "../../"
+// Then into public/04_productList.json
 import productList from '../../public/04_productList.json';
 import { prisma } from '../utils/db';
 import PDFDocument from 'pdfkit';
@@ -49,7 +50,7 @@ export async function generateQuote(
   let totalPrice = 0;
   let products: { sku: string; quantity: number }[] = [];
 
-  // Build a lookup map from the productList
+  // Build a lookup map from the product list JSON
   const productMap: { [sku: string]: { name: string; price: number } } = {};
   productList.forEach((category: any) => {
     category.items.forEach((product: any) => {
@@ -80,6 +81,7 @@ export async function generateQuote(
     totalPrice += 150;
   }
   if (serviceAddons.imaging) {
+    // For each laptop selected, add $100 per unit
     for (const sku in selectedProducts) {
       if (sku.startsWith('LAP-')) {
         const quantity = Number(selectedProducts[sku]);
@@ -135,7 +137,7 @@ export async function generateQuote(
 
   const summary = summaryParts.join('\n');
 
-  // Save the quote to the database
+  // Save the quote to the database using Prisma
   await prisma.quote.create({
     data: {
       customerName: email,
@@ -157,7 +159,7 @@ export async function createQuotePDF(quote: Quote): Promise<Buffer> {
       resolve(Buffer.concat(buffers));
     });
 
-    // PDF Branding & Compliance
+    // Generate PDF with branding and compliance details
     doc.fontSize(20).text('Quote', { align: 'center' });
     doc.moveDown();
     doc.fontSize(12).text(`Customer: ${quote.customerEmail}`);
