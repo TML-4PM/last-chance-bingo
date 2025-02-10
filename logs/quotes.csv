@@ -1,0 +1,2 @@
+timestamp,customer,email,products,totalPrice
+2025-02-10T12:00:00Z,Sample Customer,sample@example.com,"LAP-001:1,MON-001:1",1000.00
