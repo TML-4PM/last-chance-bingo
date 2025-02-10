@@ -1,10 +1,11 @@
 // src/controllers/quoteController.ts
 import fs from 'fs';
 import path from 'path';
-// Import JSON from public folder – note: from src/controllers, two levels up is correct.
 import productList from '../../public/04_productList.json';
 import { prisma } from '../utils/db';
 import PDFDocument from 'pdfkit';
+import QRCode from 'qrcode';
+import crypto from 'crypto';
 import {
   skuMultipliers,
   jobComplexityMultipliers,
@@ -49,7 +50,16 @@ export async function generateQuote(
   let totalPrice = 0;
   let products: { sku: string; quantity: number }[] = [];
 
-  // Build a lookup map from the product list JSON
+  // Build a lookup map from the productList JSON
+  productList.forEach((category: any) => {
+    category.items.forEach((product: any) => {
+      // Convert price from string to number
+      const price = parseFloat(product.price);
+      productMap[product.sku] = { name: product.name, price };
+    });
+  });
+
+  // Alternatively, build the map in one loop:
   const productMap: { [sku: string]: { name: string; price: number } } = {};
   productList.forEach((category: any) => {
     category.items.forEach((product: any) => {
@@ -143,51 +153,65 @@ export async function generateQuote(
       email,
       products: JSON.stringify(products),
       totalPrice
-    },
+    }
   });
 
   return { summary, totalPrice, customerEmail: email, products };
 }
 
 export async function createQuotePDF(quote: Quote): Promise<Buffer> {
-  return new Promise((resolve, reject) => {
-    const doc = new PDFDocument();
-    const buffers: Buffer[] = [];
-    doc.on('data', buffers.push.bind(buffers));
-    doc.on('end', () => {
-      resolve(Buffer.concat(buffers));
-    });
+  // Wrap the PDF generation in a promise
+  return new Promise(async (resolve, reject) => {
+    try {
+      const doc = new PDFDocument();
+      const buffers: Buffer[] = [];
+      doc.on('data', buffers.push.bind(buffers));
+      doc.on('end', () => {
+        resolve(Buffer.concat(buffers));
+      });
+      doc.on('error', (err) => reject(err));
 
-    // Insert Logos from the assets folder into the PDF.
-    // Construct the paths to the logo images
-    const officeworksLogoPath = path.join(process.cwd(), 'public', 'assets', 'officeworks-logo.png');
-    const geeks2uLogoPath = path.join(process.cwd(), 'public', 'assets', 'geeks2u-logo.png');
+      // Insert logos from the assets folder
+      const officeworksLogoPath = path.join(process.cwd(), 'public', 'assets', 'officeworks_logo.png');
+      const geeks2uLogoPath = path.join(process.cwd(), 'public', 'assets', 'geeks2u-logo.png');
 
-    // Place the Officeworks logo in the top left
-    doc.image(officeworksLogoPath, 50, 20, { width: 100 });
-    // Place the Geeks2U logo in the top right
-    doc.image(geeks2uLogoPath, doc.page.width - 150, 20, { width: 100 });
+      // Place the Officeworks logo in the top left and Geeks2U logo in the top right
+      doc.image(officeworksLogoPath, 50, 20, { width: 100 });
+      doc.image(geeks2uLogoPath, doc.page.width - 150, 20, { width: 100 });
 
-    // Move down to leave some vertical space after the logos
-    doc.moveDown(3);
+      // Move down to create space after logos
+      doc.moveDown(3);
 
-    // Generate PDF content
-    doc.fontSize(20).text('Quote', { align: 'center' });
-    doc.moveDown();
-    doc.fontSize(12).text(`Customer: ${quote.customerEmail}`);
-    doc.text('ABN: 123456789 | Company Address: 123 Example St, City, Country');
-    doc.moveDown();
-    doc.text('Products:');
-    quote.products.forEach((p) => {
-      doc.text(`- SKU: ${p.sku} x${p.quantity}`);
-    });
-    doc.moveDown();
-    doc.text(`Total Price: $${quote.totalPrice.toFixed(2)}`);
-    doc.moveDown();
-    doc.text('Summary:');
-    doc.text(quote.summary);
-    doc.moveDown();
-    doc.text('This quote complies with current ATO requirements.');
-    doc.end();
+      // Write quote details
+      doc.fontSize(20).text('Quote', { align: 'center' });
+      doc.moveDown();
+      doc.fontSize(12).text(`Customer: ${quote.customerEmail}`);
+      doc.text('ABN: 123456789 | Company Address: 123 Example St, City, Country');
+      doc.moveDown();
+      doc.text('Products:');
+      quote.products.forEach((p) => {
+        doc.text(`- SKU: ${p.sku} x${p.quantity}`);
+      });
+      doc.moveDown();
+      doc.text(`Total Price: $${quote.totalPrice.toFixed(2)}`);
+      doc.moveDown();
+      doc.text('Summary:');
+      doc.text(quote.summary);
+      doc.moveDown();
+      doc.text('This quote complies with current ATO requirements.');
+      doc.moveDown();
+
+      // Generate a unique QR code based on the quote summary
+      const uniqueString = crypto.createHash('sha256').update(quote.summary).digest('hex');
+      const qrDataUrl = await QRCode.toDataURL(uniqueString, { errorCorrectionLevel: 'H' });
+      const qrBuffer = Buffer.from(qrDataUrl.split(',')[1], 'base64');
+
+      // Place the QR code at the bottom center of the page
+      doc.image(qrBuffer, doc.page.width / 2 - 50, doc.y, { width: 100 });
+
+      doc.end();
+    } catch (error) {
+      reject(error);
+    }
   });
 }
