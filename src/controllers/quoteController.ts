@@ -1,7 +1,7 @@
 // src/controllers/quoteController.ts
 import fs from 'fs';
 import path from 'path';
-// Corrected the import path: two levels up from src/controllers to the root, then into public
+// Updated path: two levels up from src/controllers to the root, then public/04_productList.json
 import productList from '../../public/04_productList.json';
 import { prisma } from '../utils/db';
 import PDFDocument from 'pdfkit';
