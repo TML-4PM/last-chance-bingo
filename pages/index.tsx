@@ -33,7 +33,7 @@ export default function Home() {
   const [serviceType, setServiceType] = useState('Remote');
   const [environment, setEnvironment] = useState('Office');
   const [technicianTravel, setTechnicianTravel] = useState(false);
-  const [technicianHours, setTechnicianHours] = useState(0);
+  const [technicianHours, setTechnicianHours] = useState(0); // Optional field
   const [travelTime, setTravelTime] = useState(0);
   const [buildingAccessibility, setBuildingAccessibility] = useState('Easy');
   const [emergency, setEmergency] = useState(false);
@@ -60,7 +60,7 @@ export default function Home() {
       .catch(() => toast.error('Failed to load products.'));
   }, []);
 
-  // Load available time slots
+  // Load available time slots from API
   useEffect(() => {
     fetch('/sample-calendar.json')
       .then((res) => res.json())
@@ -92,13 +92,13 @@ export default function Home() {
       .then((res) => res.json())
       .then((data: ProductCategory[]) => {
         setProducts(data);
-        const initialQuantities: { [sku: string]: number } = {};
+        const initial: { [sku: string]: number } = {};
         data.forEach((cat) =>
           cat.items.forEach((prod) => {
-            initialQuantities[prod.sku] = 1;
+            initial[prod.sku] = 1;
           })
         );
-        setQuantities(initialQuantities);
+        setQuantities(initial);
       })
       .catch(() => toast.error('Failed to load products.'));
     toast.info('Form cleared');
