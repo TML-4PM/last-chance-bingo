@@ -1,2 +1,2 @@
-// types/nodemailer.d.ts
-declare module 'nodemailer';
+// types/pdfkit.d.ts
+declare module 'pdfkit';
