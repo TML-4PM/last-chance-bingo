@@ -58,7 +58,7 @@ export async function generateQuote(
     });
   });
 
-  // Process selected products with SKU-based multipliers
+  // Process selected products with SKU multipliers
   for (const sku in selectedProducts) {
     const quantity = Number(selectedProducts[sku]);
     if (productMap[sku]) {
@@ -137,14 +137,19 @@ export async function generateQuote(
   const summary = summaryParts.join('\n');
 
   // Save the quote to the database using Prisma
-  await prisma.quote.create({
-    data: {
-      customerName: email,
-      email,
-      products: JSON.stringify(products),
-      totalPrice
-    }
-  });
+  try {
+    await prisma.quote.create({
+      data: {
+        customerName: email,
+        email,
+        products: JSON.stringify(products),
+        totalPrice
+      }
+    });
+  } catch (error: any) {
+    console.error("Error saving quote to database:", error);
+    throw new Error("Database error");
+  }
 
   return { summary, totalPrice, customerEmail: email, products };
 }
@@ -160,26 +165,27 @@ export async function createQuotePDF(quote: Quote): Promise<Buffer> {
       });
       doc.on('error', (err: Error) => reject(err));
 
-      // Paths to logo files in public/assets folder
+      // Paths to logo files
       const officeworksLogoPath = path.join(process.cwd(), 'public', 'assets', 'officeworks_logo.png');
       const geeks2uLogoPath = path.join(process.cwd(), 'public', 'assets', 'geeks2u-logo.png');
 
-      // Check if the logos exist, and add them if they do
+      // Check and add Officeworks logo
       if (fs.existsSync(officeworksLogoPath)) {
         doc.image(officeworksLogoPath, 50, 20, { width: 100 });
       } else {
         console.error('Officeworks logo not found at:', officeworksLogoPath);
       }
+      // Check and add Geeks2U logo
       if (fs.existsSync(geeks2uLogoPath)) {
         doc.image(geeks2uLogoPath, doc.page.width - 150, 20, { width: 100 });
       } else {
         console.error('Geeks2U logo not found at:', geeks2uLogoPath);
       }
 
-      // Add vertical spacing after logos
+      // Space after logos
       doc.moveDown(3);
 
-      // Write the quote header and details
+      // Write quote details
       doc.fontSize(20).text('Quote', { align: 'center' });
       doc.moveDown();
       doc.fontSize(12).text(`Customer: ${quote.customerEmail}`);
