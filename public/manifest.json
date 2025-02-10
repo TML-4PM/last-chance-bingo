@@ -1,0 +1,20 @@
+{
+  "name": "Job Pricing Calculator",
+  "short_name": "PricingCalc",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "description": "The most well-thought-out IT job pricing calculator!",
+  "icons": [
+    {
+      "src": "/assets/officeworks-logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/assets/geeks2u-logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
