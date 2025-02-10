@@ -81,7 +81,6 @@ export async function generateQuote(
     totalPrice += 150;
   }
   if (serviceAddons.imaging) {
-    // For each laptop selected, add $100 per unit
     for (const sku in selectedProducts) {
       if (sku.startsWith('LAP-')) {
         const quantity = Number(selectedProducts[sku]);
@@ -137,7 +136,7 @@ export async function generateQuote(
 
   const summary = summaryParts.join('\n');
 
-  // Save the quote to the database
+  // Save the quote to the database using Prisma
   await prisma.quote.create({
     data: {
       customerName: email,
@@ -159,18 +158,25 @@ export async function createQuotePDF(quote: Quote): Promise<Buffer> {
       doc.on('end', () => {
         resolve(Buffer.concat(buffers));
       });
-      // Explicitly type the error parameter for the 'error' event
       doc.on('error', (err: Error) => reject(err));
 
-      // Paths to the logos in the public/assets folder
+      // Paths to logo files in public/assets folder
       const officeworksLogoPath = path.join(process.cwd(), 'public', 'assets', 'officeworks_logo.png');
       const geeks2uLogoPath = path.join(process.cwd(), 'public', 'assets', 'geeks2u-logo.png');
 
-      // Add logos to the PDF: Officeworks logo on the left, Geeks2U logo on the right
-      doc.image(officeworksLogoPath, 50, 20, { width: 100 });
-      doc.image(geeks2uLogoPath, doc.page.width - 150, 20, { width: 100 });
+      // Check if the logos exist, and add them if they do
+      if (fs.existsSync(officeworksLogoPath)) {
+        doc.image(officeworksLogoPath, 50, 20, { width: 100 });
+      } else {
+        console.error('Officeworks logo not found at:', officeworksLogoPath);
+      }
+      if (fs.existsSync(geeks2uLogoPath)) {
+        doc.image(geeks2uLogoPath, doc.page.width - 150, 20, { width: 100 });
+      } else {
+        console.error('Geeks2U logo not found at:', geeks2uLogoPath);
+      }
 
-      // Add vertical space below the logos
+      // Add vertical spacing after logos
       doc.moveDown(3);
 
       // Write the quote header and details
