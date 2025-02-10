@@ -1,3 +1,13 @@
 [build]
+  # Install dependencies, generate Prisma Client, then build your Next.js project.
   command = "npm install && npx prisma generate && npm run build"
-  publish = "out"  # Adjust this if you're not using static export; for Next.js, Vercel is common, but for Netlify, you might use "out" if using next export
+  # The publish directory for Next.js on Netlify typically is set by the plugin.
+  # If you're using the Next.js plugin for Netlify, you don't need to change this.
+  publish = ".next"
+  
+  # Set environment variables for the build.
+  [build.environment]
+    NODE_OPTIONS = "--no-warnings"
+  
+[[plugins]]
+  package = "netlify-plugin-nextjs"
