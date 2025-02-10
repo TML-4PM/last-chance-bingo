@@ -6,11 +6,11 @@ import dynamic from 'next/dynamic';
 import { ProductCategory } from '../src/models/product';
 import GuidedTour from '../src/components/GuidedTour';
 
-// Dynamically import the Chatbot (client-side only)
+// Dynamically import Chatbot (client-side only) with bot name prop set to "e-Troy"
 const Chatbot = dynamic(() => import('../src/components/Chatbot'), { ssr: false });
 
 export default function Home() {
-  // Basic fields
+  // Basic Fields
   const [email, setEmail] = useState('');
   const [referralCode, setReferralCode] = useState('');
   const [products, setProducts] = useState<ProductCategory[]>([]);
@@ -21,14 +21,14 @@ export default function Home() {
   const [scheduleDate, setScheduleDate] = useState('');
   const [tourActive, setTourActive] = useState(false);
 
-  // Service add-ons
+  // Service Add‑Ons
   const [serviceAddons, setServiceAddons] = useState({
     networking: false,
     imaging: false,
     onsiteInstallation: false,
   });
 
-  // Job details
+  // Job Details
   const [jobComplexity, setJobComplexity] = useState('Basic');
   const [serviceType, setServiceType] = useState('Remote');
   const [environment, setEnvironment] = useState('Office');
@@ -40,10 +40,10 @@ export default function Home() {
   const [timeSlot, setTimeSlot] = useState('');
   const [availableSlots, setAvailableSlots] = useState<string[]>([]);
 
-  // CSV data state
+  // CSV Data state
   const [csvData, setCsvData] = useState('');
 
-  // Load products on mount
+  // Load products from API
   useEffect(() => {
     fetch('/api/products')
       .then((res) => res.json())
@@ -51,15 +51,17 @@ export default function Home() {
         setProducts(data);
         // Initialize each product's quantity to 1
         const initialQuantities: { [sku: string]: number } = {};
-        data.forEach((cat) => cat.items.forEach((prod) => {
-          initialQuantities[prod.sku] = 1;
-        }));
+        data.forEach((cat) =>
+          cat.items.forEach((prod) => {
+            initialQuantities[prod.sku] = 1;
+          })
+        );
         setQuantities(initialQuantities);
       })
       .catch(() => toast.error('Failed to load products.'));
   }, []);
 
-  // Load available time slots on mount
+  // Load available time slots from API
   useEffect(() => {
     fetch('/sample-calendar.json')
       .then((res) => res.json())
@@ -70,20 +72,22 @@ export default function Home() {
   // Handlers
   const handleProductChange = (sku: string, checked: boolean) => {
     setSelectedProducts((prev) => {
-      const newSel = { ...prev };
+      const newSelection = { ...prev };
       if (checked) {
-        newSel[sku] = quantities[sku] || 1;
+        newSelection[sku] = quantities[sku] || 1;
       } else {
-        delete newSel[sku];
+        delete newSelection[sku];
       }
-      return newSel;
+      return newSelection;
     });
   };
 
   const handleQuantityChange = (sku: string, value: number) => {
     setQuantities((prev) => ({ ...prev, [sku]: value }));
     setSelectedProducts((prev) => {
-      if (prev[sku] !== undefined) return { ...prev, [sku]: value };
+      if (prev[sku] !== undefined) {
+        return { ...prev, [sku]: value };
+      }
       return prev;
     });
   };
@@ -187,15 +191,15 @@ export default function Home() {
         {/* Email and Referral Section */}
         <div className="space-y-2">
           <label htmlFor="email" className="block font-medium text-lg">
-            Enter Email to Pre-fill:
+            please drop the contents of your email (copy/paste) here, press 'load quote' and continue shopping. That's it!
           </label>
           <input
             type="email"
             id="email"
-            placeholder="Enter your email"
+            placeholder="your-email@example.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full md:w-1/2 p-4 border rounded text-lg"
+            className="w-full md:w-3/4 p-6 border rounded text-xl"
             aria-label="Email Input"
           />
           <label htmlFor="referralCode" className="block font-medium text-lg">
@@ -207,10 +211,10 @@ export default function Home() {
             placeholder="Enter referral code"
             value={referralCode}
             onChange={(e) => setReferralCode(e.target.value)}
-            className="w-full md:w-1/2 p-4 border rounded text-lg"
+            className="w-full md:w-3/4 p-4 border rounded text-lg"
             aria-label="Referral Code"
           />
-          <button className="bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded" aria-label="Load Quote">
+          <button className="bg-blue-500 hover:bg-blue-700 text-white px-6 py-3 rounded text-lg" aria-label="Load Quote">
             Load Quote
           </button>
         </div>
@@ -237,7 +241,8 @@ export default function Home() {
                     <input
                       type="number"
                       id={`qty-${product.sku}`}
-                      min="1"
+                      min="0"
+                      step="1"
                       value={quantities[product.sku] || 1}
                       className="w-16 p-1 border rounded ml-2"
                       aria-label={`Quantity for ${product.name}`}
@@ -369,7 +374,9 @@ export default function Home() {
               <label htmlFor="technicianTravel">Technician Travel Required (+$50 fixed fee)</label>
             </div>
             <div>
-              <label htmlFor="technicianHours" className="block font-medium">Technician Hours (estimated):</label>
+              <label htmlFor="technicianHours" className="block font-medium">
+                Technician Hours (estimated, optional):
+              </label>
               <input
                 type="number"
                 id="technicianHours"
@@ -434,10 +441,10 @@ export default function Home() {
         </section>
         {/* Action Buttons */}
         <div className="flex flex-wrap gap-2">
-          <button className="bg-green-500 hover:bg-green-700 text-white px-4 py-2 rounded" onClick={generateQuote}>
+          <button className="bg-green-500 hover:bg-green-700 text-white px-6 py-3 rounded text-lg" onClick={generateQuote}>
             Generate Quote
           </button>
-          <button className="bg-gray-500 hover:bg-gray-700 text-white px-4 py-2 rounded" onClick={printQuote}>
+          <button className="bg-gray-500 hover:bg-gray-700 text-white px-6 py-3 rounded text-lg" onClick={printQuote}>
             Print as PDF
           </button>
         </div>
@@ -451,7 +458,7 @@ export default function Home() {
             className="p-2 border rounded"
             aria-label="Schedule Job Date"
           />
-          <button className="bg-purple-500 hover:bg-purple-700 text-white px-4 py-2 rounded" onClick={scheduleJob}>
+          <button className="bg-purple-500 hover:bg-purple-700 text-white px-6 py-3 rounded text-lg" onClick={scheduleJob}>
             Schedule Job
           </button>
         </div>
@@ -462,13 +469,13 @@ export default function Home() {
             {quoteSummary}
           </pre>
           <p id="total-price" className="text-2xl font-bold">Total: ${totalPrice.toFixed(2)}</p>
-          <button className="bg-blue-600 hover:bg-blue-800 text-white px-4 py-2 rounded" onClick={sendEmail}>
+          <button className="bg-blue-600 hover:bg-blue-800 text-white px-6 py-3 rounded text-lg" onClick={sendEmail}>
             Email Quote
           </button>
         </section>
         {/* CSV Data Section */}
         <section>
-          <button className="bg-yellow-500 hover:bg-yellow-700 text-white px-4 py-2 rounded" onClick={fetchCsvData}>
+          <button className="bg-yellow-500 hover:bg-yellow-700 text-white px-6 py-3 rounded text-lg" onClick={fetchCsvData}>
             View CSV Data
           </button>
           {csvData && (
@@ -481,14 +488,14 @@ export default function Home() {
         <div className="flex justify-end">
           <button
             onClick={() => setTourActive(true)}
-            className="bg-indigo-500 hover:bg-indigo-700 text-white px-4 py-2 rounded"
+            className="bg-indigo-500 hover:bg-indigo-700 text-white px-6 py-3 rounded text-lg"
             aria-label="Start Guided Tour"
           >
             Start Guided Tour
           </button>
         </div>
       </main>
-      <Chatbot />
+      <Chatbot botName="e-Troy" />
       {tourActive && <GuidedTour onClose={() => setTourActive(false)} />}
     </>
   );
