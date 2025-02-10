@@ -1,3 +1,4 @@
+// pages/index.tsx
 import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import { toast } from 'react-toastify';
@@ -5,7 +6,7 @@ import dynamic from 'next/dynamic';
 import { ProductCategory } from '../src/models/product';
 import GuidedTour from '../src/components/GuidedTour';
 
-// Dynamically import Chatbot (client-side only)
+// Dynamically import the Chatbot (client-side only)
 const Chatbot = dynamic(() => import('../src/components/Chatbot'), { ssr: false });
 
 export default function Home() {
@@ -40,7 +41,7 @@ export default function Home() {
   const [availableSlots, setAvailableSlots] = useState<string[]>([]);
 
   // CSV data state
-  const [csvData, setCsvData] = useState<string>("");
+  const [csvData, setCsvData] = useState('');
 
   // Load products on mount
   useEffect(() => {
@@ -48,12 +49,11 @@ export default function Home() {
       .then((res) => res.json())
       .then((data: ProductCategory[]) => {
         setProducts(data);
+        // Initialize each product's quantity to 1
         const initialQuantities: { [sku: string]: number } = {};
-        data.forEach((cat) =>
-          cat.items.forEach((prod) => {
-            initialQuantities[prod.sku] = 1;
-          })
-        );
+        data.forEach((cat) => cat.items.forEach((prod) => {
+          initialQuantities[prod.sku] = 1;
+        }));
         setQuantities(initialQuantities);
       })
       .catch(() => toast.error('Failed to load products.'));
@@ -67,24 +67,23 @@ export default function Home() {
       .catch(() => toast.error('Failed to load available time slots.'));
   }, []);
 
+  // Handlers
   const handleProductChange = (sku: string, checked: boolean) => {
     setSelectedProducts((prev) => {
-      const newSelection = { ...prev };
+      const newSel = { ...prev };
       if (checked) {
-        newSelection[sku] = quantities[sku] || 1;
+        newSel[sku] = quantities[sku] || 1;
       } else {
-        delete newSelection[sku];
+        delete newSel[sku];
       }
-      return newSelection;
+      return newSel;
     });
   };
 
   const handleQuantityChange = (sku: string, value: number) => {
     setQuantities((prev) => ({ ...prev, [sku]: value }));
     setSelectedProducts((prev) => {
-      if (prev[sku] !== undefined) {
-        return { ...prev, [sku]: value };
-      }
+      if (prev[sku] !== undefined) return { ...prev, [sku]: value };
       return prev;
     });
   };
@@ -187,7 +186,9 @@ export default function Home() {
       <main className="max-w-4xl mx-auto p-4 space-y-6">
         {/* Email and Referral Section */}
         <div className="space-y-2">
-          <label htmlFor="email" className="block font-medium text-lg">Enter Email to Pre-fill:</label>
+          <label htmlFor="email" className="block font-medium text-lg">
+            Enter Email to Pre-fill:
+          </label>
           <input
             type="email"
             id="email"
@@ -197,7 +198,9 @@ export default function Home() {
             className="w-full md:w-1/2 p-4 border rounded text-lg"
             aria-label="Email Input"
           />
-          <label htmlFor="referralCode" className="block font-medium text-lg">Referral Code (optional):</label>
+          <label htmlFor="referralCode" className="block font-medium text-lg">
+            Referral Code (optional):
+          </label>
           <input
             type="text"
             id="referralCode"
