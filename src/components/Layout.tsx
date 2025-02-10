@@ -1,6 +1,6 @@
 // src/components/Layout.tsx
 import React from 'react';
-import DarkModeToggle from './DarkModeToggle';
+import DarkModeToggle from './DarkModeToggle';  // This import now works because the file exists
 import Head from 'next/head';
 import Image from 'next/image';
 
@@ -8,7 +8,7 @@ interface LayoutProps {
   children: React.ReactNode;
 }
 
-const Layout = ({ children }: LayoutProps) => {
+const Layout: React.FC<LayoutProps> = ({ children }) => {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
       <Head>
