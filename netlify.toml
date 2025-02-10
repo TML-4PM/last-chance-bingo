@@ -1,0 +1,3 @@
+[build]
+  command = "npm install && npx prisma generate && npm run build"
+  publish = "out"  # Adjust this if you're not using static export; for Next.js, Vercel is common, but for Netlify, you might use "out" if using next export
