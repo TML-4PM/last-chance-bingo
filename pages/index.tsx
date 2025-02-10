@@ -6,7 +6,7 @@ import dynamic from 'next/dynamic';
 import { ProductCategory } from '../src/models/product';
 import GuidedTour from '../src/components/GuidedTour';
 
-// Dynamically import Chatbot (client-side only) with bot name prop set to "e-Troy"
+// Dynamically import Chatbot (client-side only)
 const Chatbot = dynamic(() => import('../src/components/Chatbot'), { ssr: false });
 
 export default function Home() {
@@ -33,7 +33,7 @@ export default function Home() {
   const [serviceType, setServiceType] = useState('Remote');
   const [environment, setEnvironment] = useState('Office');
   const [technicianTravel, setTechnicianTravel] = useState(false);
-  const [technicianHours, setTechnicianHours] = useState(0);
+  const [technicianHours, setTechnicianHours] = useState(0); // optional field
   const [travelTime, setTravelTime] = useState(0);
   const [buildingAccessibility, setBuildingAccessibility] = useState('Easy');
   const [emergency, setEmergency] = useState(false);
@@ -49,7 +49,6 @@ export default function Home() {
       .then((res) => res.json())
       .then((data: ProductCategory[]) => {
         setProducts(data);
-        // Initialize each product's quantity to 1
         const initialQuantities: { [sku: string]: number } = {};
         data.forEach((cat) =>
           cat.items.forEach((prod) => {
@@ -61,7 +60,7 @@ export default function Home() {
       .catch(() => toast.error('Failed to load products.'));
   }, []);
 
-  // Load available time slots from API
+  // Load available time slots
   useEffect(() => {
     fetch('/sample-calendar.json')
       .then((res) => res.json())
@@ -69,15 +68,47 @@ export default function Home() {
       .catch(() => toast.error('Failed to load available time slots.'));
   }, []);
 
-  // Handlers
+  // Handler to clear the entire form
+  const clearForm = () => {
+    setEmail('');
+    setReferralCode('');
+    setSelectedProducts({});
+    setQuantities({});
+    setQuoteSummary('');
+    setTotalPrice(0);
+    setScheduleDate('');
+    setServiceAddons({ networking: false, imaging: false, onsiteInstallation: false });
+    setJobComplexity('Basic');
+    setServiceType('Remote');
+    setEnvironment('Office');
+    setTechnicianTravel(false);
+    setTechnicianHours(0);
+    setTravelTime(0);
+    setBuildingAccessibility('Easy');
+    setEmergency(false);
+    setTimeSlot('');
+    // Reload products to reset quantities:
+    fetch('/api/products')
+      .then((res) => res.json())
+      .then((data: ProductCategory[]) => {
+        setProducts(data);
+        const initialQuantities: { [sku: string]: number } = {};
+        data.forEach((cat) =>
+          cat.items.forEach((prod) => {
+            initialQuantities[prod.sku] = 1;
+          })
+        );
+        setQuantities(initialQuantities);
+      })
+      .catch(() => toast.error('Failed to load products.'));
+    toast.info('Form cleared');
+  };
+
   const handleProductChange = (sku: string, checked: boolean) => {
     setSelectedProducts((prev) => {
       const newSelection = { ...prev };
-      if (checked) {
-        newSelection[sku] = quantities[sku] || 1;
-      } else {
-        delete newSelection[sku];
-      }
+      if (checked) newSelection[sku] = quantities[sku] || 1;
+      else delete newSelection[sku];
       return newSelection;
     });
   };
@@ -85,9 +116,7 @@ export default function Home() {
   const handleQuantityChange = (sku: string, value: number) => {
     setQuantities((prev) => ({ ...prev, [sku]: value }));
     setSelectedProducts((prev) => {
-      if (prev[sku] !== undefined) {
-        return { ...prev, [sku]: value };
-      }
+      if (prev[sku] !== undefined) return { ...prev, [sku]: value };
       return prev;
     });
   };
@@ -214,9 +243,14 @@ export default function Home() {
             className="w-full md:w-3/4 p-4 border rounded text-lg"
             aria-label="Referral Code"
           />
-          <button className="bg-blue-500 hover:bg-blue-700 text-white px-6 py-3 rounded text-lg" aria-label="Load Quote">
-            Load Quote
-          </button>
+          <div className="flex flex-wrap gap-4">
+            <button className="bg-blue-500 hover:bg-blue-700 text-white px-6 py-3 rounded text-lg" aria-label="Load Quote">
+              Load Quote
+            </button>
+            <button className="bg-red-500 hover:bg-red-700 text-white px-6 py-3 rounded text-lg" onClick={clearForm}>
+              Clear Form
+            </button>
+          </div>
         </div>
         {/* Product Selection */}
         <section>
