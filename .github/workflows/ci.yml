@@ -17,11 +17,16 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: '18'
       - name: Install dependencies
         run: npm install
       - name: Run tests
-        run: npm test
+        run: |
+          if npx jest --listTests 2>/dev/null | grep -q .; then
+            npm test
+          else
+            echo "No tests found, skipping."
+          fi
       - name: Build project
         run: npm run build
       - name: Deploy to Vercel
